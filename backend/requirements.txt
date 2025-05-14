@@ -1,0 +1,21 @@
+fastapi>=0.115.12
+uvicorn[standard]
+#current version of uvicorn 0.34.2
+
+# Database
+SQLAlchemy>=2.0.40
+psycopg2-binary>=2.9.10
+
+# Pydantic (for validation)
+pydantic>=2.6
+
+# Environment variable loading
+python-dotenv>=1.0.1
+
+# Optional helpers
+python-dateutil>=2.9
+alembic>=1.15.2
+
+# For testing
+pytest
+httpx

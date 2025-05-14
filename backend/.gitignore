@@ -1,0 +1,42 @@
+# Ignore virtual environment
+venv/
+
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Environment / config
+.env
+*.env
+
+# Logs
+*.log
+
+# DB / data files
+*.sqlite3
+
+# IDE/editor folders
+.vscode/
+.idea/
+*.swp
+
+# Mac/Linux junk
+.DS_Store
+Thumbs.db
+
+# If/when you use Docker later
+*.pid
+*.sock
+*.db
+docker-compose.override.yml
+
+# Pytest cache
+.pytest_cache/
+
+# mypy and coverage
+.mypy_cache/
+.coverage
+htmlcov/
