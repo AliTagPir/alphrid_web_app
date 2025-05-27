@@ -81,9 +81,44 @@ async def test_guest_cannot_post_tracker_data():
         assert response.status_code == 403
 
 @pytest.mark.asyncio
-async def test_chart_access_without_auth():
+@pytest.mark.parametrize("timeframe", ["daily", "weekly", "monthly", "yearly"])
+async def test_admin_can_access_all_charts(timeframe):
+    async with AsyncClient(base_url="http://localhost:8000") as client:
+        login = await client.post("/auth/login", json={
+            "username": test_admin_username,
+            "password": test_admin_password
+        })
+        token = login.json()["access_token"]
+
+        response = await client.get(
+            f"/charts/{timeframe}",
+            headers={"Authorization": f"Bearer {token}"}
+        )
+
+        assert response.status_code in [200, 404]
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("timeframe", ["daily", "weekly", "monthly", "yearly"])
+async def test_guest_can_access_all_charts(timeframe):
+    async with AsyncClient(base_url="http://localhost:8000") as client:
+        login = await client.post("/auth/login", json={
+            "username": test_guest_username,
+            "password": test_guest_password
+        })
+        token = login.json()["access_token"]
+
+        response = await client.get(
+            f"/charts/{timeframe}",
+            headers={"Authorization": f"Bearer {token}"}
+        )
+
+        assert response.status_code in [200, 404]
+
+
+@pytest.mark.asyncio
+async def test_unauthenticated_user_cannot_access_charts():
     async with AsyncClient(base_url="http://localhost:8000") as client:
         response = await client.get("/charts/daily")
-        # 200 if chart exists, 404 if chart does not exist
-        assert response.status_code in [200, 404]
+
+        assert response.status_code == 422
 
