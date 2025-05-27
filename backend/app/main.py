@@ -1,7 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from app.routers import charts, tracker
+from app.routers import charts, tracker, auth
 
 app = FastAPI(
     title="ALPHRID API",
@@ -19,4 +18,5 @@ app.add_middleware(
 
 # Register API routers
 app.include_router(charts.router, prefix="/charts", tags=["Charts"])
-#app.include_router(tracker.router, prefix="/track", tags=["Tracker"])
+app.include_router(tracker.router, prefix="/track", tags=["Tracker"])
+app.include_router(auth.router, prefix="/auth", tags=["Auth"])
