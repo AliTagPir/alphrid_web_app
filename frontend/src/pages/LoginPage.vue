@@ -7,14 +7,14 @@ import { login } from '@/services/authService'
 
 const showLoginForm = ref(false)
 const router = useRouter();
+const errorMessage = ref('')
 
 const handleLogin = async ({ username, password }) => {
   try {
     await login(username, password);
     router.push("/home");
   } catch (err) {
-    console.error("Login failed", err);
-    // Optional: Show a toast notification later
+    errorMessage.value = 'Invalid username or password'
   }
 };
 </script>
@@ -31,7 +31,7 @@ const handleLogin = async ({ username, password }) => {
     <!-- Login Form Div -->
     <transition name="slide-in">
       <div v-if="showLoginForm" class="form-wrapper">
-        <LoginForm @submit="handleLogin" />
+        <LoginForm :error-message="errorMessage" @submit="handleLogin" />
       </div>
     </transition>
   </div>
@@ -41,13 +41,8 @@ const handleLogin = async ({ username, password }) => {
 .login-page {
   min-height: 100vh;
   width: 100vw;
-
   position: relative;
   background: #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column
 }
 
 .banner-wrapper, .form-wrapper {

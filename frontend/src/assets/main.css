@@ -11,8 +11,14 @@
 html, body {
   height: 100%;
   width: 100%;
-  font-family: 'Inter', sans-serif; /* or any font you prefer */
+  font-family: 'Poppins', sans-serif; /* or any font you prefer */
 }
+
+button, input, textarea, 
+select, label{
+  font-family: inherit;
+}
+
 
 /* Optional: smoother scrolling */
 html {
