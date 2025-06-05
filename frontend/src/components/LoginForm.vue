@@ -214,7 +214,7 @@ const handleSubmit = () => {
   }
 }
 
-/* 📱 Phones: below 768px */
+/* Phones: below 768px */
 @media (max-width: 767px) {
   .login-box {
     width: 100%;
