@@ -1,15 +1,20 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue'
+import { useAuthStore } from '@/stores/auth'
 import { ref, onMounted } from 'vue'
 
 
 const chartJson = ref(null)
-
+const authStore = useAuthStore()
 
 
 onMounted(async () => {
   try {
-    const token = localStorage.getItem("access_token")  // adjust if stored differently
+    const token = authStore.token
+    if (!token) {
+      chartJson.value = 'Error: No token found. Please log in.'
+      return
+    }
     const res = await fetch("http://localhost:8000/charts/monthly", {
       headers: {
         Authorization: `Bearer ${token}`
