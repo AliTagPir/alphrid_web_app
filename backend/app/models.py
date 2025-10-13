@@ -1,6 +1,6 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy import Integer, String, Text, Float, DateTime, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 import uuid
 from datetime import datetime
 
@@ -13,7 +13,7 @@ class ChartCache(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     chart_key: Mapped[str] = mapped_column(String, nullable=False, unique=True)
     chart_type: Mapped[str] = mapped_column(String, nullable=False)
-    chart_html: Mapped[str] = mapped_column(Text, nullable=False)
+    chart_json: Mapped[dict] = mapped_column(JSONB, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     last_updated: Mapped[datetime] = mapped_column(DateTime, nullable=False)
 

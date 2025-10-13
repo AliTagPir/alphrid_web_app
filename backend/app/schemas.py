@@ -4,7 +4,7 @@ from uuid import UUID
 
 # Chart
 class ChartResponse(BaseModel):
-    chart_html: str
+    chart_data: dict
 
 # Log in
 class LoginRequest(BaseModel):

@@ -6,7 +6,7 @@ from app.database import get_db
 from app import models
 from app.crud import get_user_by_username
 
-def get_current_user(authorization: str = Header(...), db: Session = Depends(get_db)) -> models.WebAppUser:
+def get_current_user(authorization: str = Header(..., convert_underscores=False), db: Session = Depends(get_db)) -> models.WebAppUser:
     if not authorization.startswith("Bearer "):
         raise HTTPException(status_code=401, detail="Invalid authorization format")
     

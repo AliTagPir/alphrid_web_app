@@ -25,4 +25,4 @@ def get_latest_chart(
     if not result:
         raise HTTPException(status_code=404, detail="No chart found for that timeframe")
     
-    return {"chart_html": result.chart_html}
+    return {"chart_data": result.chart_json}
