@@ -2,19 +2,25 @@
 import Navbar from '@/components/Navbar.vue'
 import { useAuthStore } from '@/stores/auth'
 import { ref, onMounted } from 'vue'
+import Plotly from 'plotly.js-dist-min'
 
 
-const chartJson = ref(null)
+const chartData = ref(null)
 const authStore = useAuthStore()
+const loading = ref(true)
+const error = ref(null)
+
 
 
 onMounted(async () => {
   try {
     const token = authStore.token
     if (!token) {
-      chartJson.value = 'Error: No token found. Please log in.'
+      error.value = 'No token found. Please log in.'
+      loading.value = false
       return
     }
+
     const res = await fetch("http://localhost:8000/charts/monthly", {
       headers: {
         Authorization: `Bearer ${token}`
@@ -26,9 +32,15 @@ onMounted(async () => {
     }
 
     const data = await res.json()
-    chartJson.value = JSON.stringify(data.chart_data, null, 2)
+    chartData.value = data.chart_data
+
+    //Dynamically renders the chart into div
+    Plotly.newPlot('monthly-chart', chartData.value.data, chartData.value.layout)
+
   } catch (err) {
-    chartJson.value = `Error: ${err.message}`
+    error.value = `Error: ${err.message}`
+  } finally {
+    loading.value = false
   }
 })
 </script>
@@ -38,11 +50,12 @@ onMounted(async () => {
     <Navbar />
     <div class="content">
       <!-- Home page content here -->
-      <h1>Welcome to ALPHRID Dashboard</h1>
       <h1>ALPHRID Monthly Chart JSON</h1>
 
-      <pre v-if="chartJson">{{ chartJson }}</pre>
-      <p v-else>Loading chart...</p>
+      <div v-if="loading">Loading chart...</div>
+      <div v-if="error" class="error">{{ error }}</div>
+
+      <div v-show="!loading && !error" id="monthly-chart" style="width: 100%; height: 600px;"></div>
     </div>
   </div>
 </template>
