@@ -3,16 +3,30 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import WelcomeBanner from '@/components/WelcomeBanner.vue'
 import LoginForm from '@/components/LoginForm.vue'
-import { login } from '@/services/authService'
+import { useAuthStore } from '@/stores/auth'
 
 const showLoginForm = ref(false)
 const router = useRouter();
 const errorMessage = ref('')
+const authStore = useAuthStore()
 
 const handleLogin = async ({ username, password }) => {
   try {
-    await login(username, password);
-    router.push("/home");
+    const res = await fetch('http://localhost:8000/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json'},
+      body: JSON.stringify({username, password})
+    });
+
+    const data = await res.json();
+    
+    if (res.ok) {
+      authStore.setToken(data.access_token)
+      router.push("/home");
+    } else {
+      errorMessage.value = data.detail || 'login failed';
+      return
+    } 
   } catch (err) {
     errorMessage.value = 'Invalid username or password'
   }

@@ -1,5 +1,31 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue'
+import { ref, onMounted } from 'vue'
+
+
+const chartJson = ref(null)
+
+
+
+onMounted(async () => {
+  try {
+    const token = localStorage.getItem("access_token")  // adjust if stored differently
+    const res = await fetch("http://localhost:8000/charts/monthly", {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    })
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch chart")
+    }
+
+    const data = await res.json()
+    chartJson.value = JSON.stringify(data.chart_data, null, 2)
+  } catch (err) {
+    chartJson.value = `Error: ${err.message}`
+  }
+})
 </script>
 
 <template>
@@ -8,6 +34,10 @@ import Navbar from '@/components/Navbar.vue'
     <div class="content">
       <!-- Home page content here -->
       <h1>Welcome to ALPHRID Dashboard</h1>
+      <h1>ALPHRID Monthly Chart JSON</h1>
+
+      <pre v-if="chartJson">{{ chartJson }}</pre>
+      <p v-else>Loading chart...</p>
     </div>
   </div>
 </template>
