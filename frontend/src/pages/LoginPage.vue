@@ -22,6 +22,7 @@ const handleLogin = async ({ username, password }) => {
     
     if (res.ok) {
       authStore.setToken(data.access_token)
+      await authStore.fetchUserInfo()
       router.push("/home");
     } else {
       errorMessage.value = data.detail || 'login failed';

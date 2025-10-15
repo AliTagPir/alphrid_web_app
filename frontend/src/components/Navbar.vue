@@ -1,13 +1,37 @@
 <script setup>
+import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
+import { computed } from 'vue';
+import { watchEffect } from 'vue';
+
+const authStore = useAuthStore()
+const router = useRouter()
+
+const handleLogout = () => {
+  authStore.token = null
+  authStore.user = null
+  router.push('/login')
+}
+
+const userRoleLabel = computed(() => {
+  const role = authStore.user?.role
+  if (!role) return ''
+  return role === 'admin' ? 'Admin User' : 'Guest User'
+})
+watchEffect(() => {
+  console.log("Updated Role Label:", userRoleLabel.value)
+})
 </script>
 <template>
   <nav class="navbar">
     <div class="logo">ALPHRID</div>
+    <div class="user-role">{{ userRoleLabel }}</div>
     <ul class="nav-links">
       <li><a href="#">Dashboard</a></li>
       <li><a href="#">Tracker</a></li>
-      <li><a href="#">Logout</a></li>
+      <li><a href="#" @click.prevent="handleLogout">Logout</a></li>
     </ul>
+    
   </nav>
 </template>
 
@@ -47,5 +71,12 @@
 
 .nav-links li a.active {
   color: #000000; /* Active link */
+}
+
+.user-role {
+  margin-left: auto;
+  margin-right: 1rem;
+  font-weight: bold;
+  color: #000000;
 }
 </style>
