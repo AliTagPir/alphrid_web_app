@@ -36,3 +36,10 @@ def get_latest_chart_by_timeframe(db: Session, timeframe: str) -> ChartCache | N
         .limit(1)
     )
     return db.execute(stmt).scalars().first()
+
+def get_chart_keys_by_timeframe(db: Session, timeframe: str) -> list[str]:
+    stmt = select(ChartCache.chart_key).where(
+        ChartCache.chart_key.startswith(f"{timeframe}_"))
+    
+    result = db.execute(stmt).scalars().all()
+    return result

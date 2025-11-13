@@ -1,5 +1,6 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue'
+import MonthlyChart from '@/components/charts/MonthlyChart.vue'
 import { useAuthStore } from '@/stores/auth'
 import { ref, onMounted } from 'vue'
 import Plotly from 'plotly.js-dist-min'
@@ -7,10 +8,9 @@ import Plotly from 'plotly.js-dist-min'
 
 const chartData = ref(null)
 const authStore = useAuthStore()
+console.log("Token from Pinia:", authStore.accessToken)
 const loading = ref(true)
 const error = ref(null)
-
-
 
 onMounted(async () => {
   try {

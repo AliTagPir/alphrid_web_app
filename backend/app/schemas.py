@@ -1,10 +1,15 @@
 from pydantic import BaseModel
 from datetime import datetime
 from uuid import UUID
+from typing import List
 
 # Chart
 class ChartResponse(BaseModel):
     chart_data: dict
+
+class ChartKeyResponse(BaseModel):
+    timeframe: str
+    keys: List[str]
 
 # Log in
 class LoginRequest(BaseModel):
