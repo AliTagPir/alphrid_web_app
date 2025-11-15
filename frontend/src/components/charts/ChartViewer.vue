@@ -17,8 +17,8 @@ const isLoading = ref(true);
 const error = ref(null);
 
 const authStore = useAuthStore();
-console.log("Token from Pinia:", authStore.accessToken);
-const token = authStore.accessToken;
+console.log("Token from Pinia:", authStore.token);
+const token = authStore.token;
 
 const fetchChartKeys = async () => {
   const res = await fetch(`http://localhost:8000/charts/${props.timeframe}/keys`, {

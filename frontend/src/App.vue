@@ -3,12 +3,8 @@ import { onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 
 const authStore = useAuthStore()
+authStore.restoreSession()
 
-onMounted(() => {
-  if (authStore.token && !authStore.user) {
-    authStore.fetchUserInfo()
-  }
-})
 </script>
 
 <template>

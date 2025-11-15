@@ -5,44 +5,56 @@ import { useAuthStore } from '@/stores/auth'
 import { ref, onMounted } from 'vue'
 import Plotly from 'plotly.js-dist-min'
 
+// import { watch } from 'vue'
 
-const chartData = ref(null)
-const authStore = useAuthStore()
-console.log("Token from Pinia:", authStore.accessToken)
-const loading = ref(true)
-const error = ref(null)
+// const authStore = useAuthStore()
 
-onMounted(async () => {
-  try {
-    const token = authStore.token
-    if (!token) {
-      error.value = 'No token found. Please log in.'
-      loading.value = false
-      return
-    }
+// watch(
+//   () => authStore.token,
+//   (newVal) => {
+//     console.log("Token from Pinia:", newVal)
+//   },
+//   { immediate: true }
+// )
 
-    const res = await fetch("http://localhost:8000/charts/monthly", {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    })
+// const chartData = ref(null)
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch chart")
-    }
 
-    const data = await res.json()
-    chartData.value = data.chart_data
+// const loading = ref(true)
+// const error = ref(null)
 
-    //Dynamically renders the chart into div
-    Plotly.newPlot('monthly-chart', chartData.value.data, chartData.value.layout)
+// onMounted(async () => {
+//   try {
+//     const token = authStore.token
+//     console.log("Token from Pinia:", authStore.accessToken)
+//     if (!token) {
+//       error.value = 'No token found. Please log in.'
+//       loading.value = false
+//       return
+//     }
 
-  } catch (err) {
-    error.value = `Error: ${err.message}`
-  } finally {
-    loading.value = false
-  }
-})
+//     const res = await fetch("http://localhost:8000/charts/monthly", {
+//       headers: {
+//         Authorization: `Bearer ${token}`
+//       }
+//     })
+
+//     if (!res.ok) {
+//       throw new Error("Failed to fetch chart")
+//     }
+
+//     const data = await res.json()
+//     chartData.value = data.chart_data
+
+//     //Dynamically renders the chart into div
+//     Plotly.newPlot('monthly-chart', chartData.value.data, chartData.value.layout)
+
+//   } catch (err) {
+//     error.value = `Error: ${err.message}`
+//   } finally {
+//     loading.value = false
+//   }
+// })
 </script>
 
 <template>
@@ -50,12 +62,13 @@ onMounted(async () => {
     <Navbar />
     <div class="content">
       <!-- Home page content here -->
-      <h1>ALPHRID Monthly Chart JSON</h1>
+      <MonthlyChart />
+      <!-- <h1>ALPHRID Monthly Chart JSON</h1>
 
       <div v-if="loading">Loading chart...</div>
       <div v-if="error" class="error">{{ error }}</div>
 
-      <div v-show="!loading && !error" id="monthly-chart" style="width: 100%; height: 600px;"></div>
+      <div v-show="!loading && !error" id="monthly-chart" style="width: 100%; height: 600px;"></div> -->
     </div>
   </div>
 </template>

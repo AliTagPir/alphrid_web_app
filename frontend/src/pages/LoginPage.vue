@@ -10,26 +10,16 @@ const router = useRouter();
 const errorMessage = ref('')
 const authStore = useAuthStore()
 
-const handleLogin = async ({ username, password }) => {
-  try {
-    const res = await fetch('http://localhost:8000/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json'},
-      body: JSON.stringify({username, password})
-    });
+const onLogin = async (form) => {
+  const result = await authStore.login({
+    username: form.username,
+    password: form.password,
+  });
 
-    const data = await res.json();
-    
-    if (res.ok) {
-      authStore.setToken(data.access_token)
-      await authStore.fetchUserInfo()
-      router.push("/home");
-    } else {
-      errorMessage.value = data.detail || 'login failed';
-      return
-    } 
-  } catch (err) {
-    errorMessage.value = 'Invalid username or password'
+  if (result.success) {
+    router.push("/home");
+  } else {
+    errorMessage.value = result.message;
   }
 };
 </script>
@@ -46,7 +36,7 @@ const handleLogin = async ({ username, password }) => {
     <!-- Login Form Div -->
     <transition name="slide-in">
       <div v-if="showLoginForm" class="form-wrapper">
-        <LoginForm :error-message="errorMessage" @submit="handleLogin" />
+        <LoginForm :error-message="errorMessage" @submit="onLogin" />
       </div>
     </transition>
   </div>
