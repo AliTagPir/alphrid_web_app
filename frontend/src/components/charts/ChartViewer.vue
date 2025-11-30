@@ -1,16 +1,26 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watchEffect } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import { fetchChartKeysRequest, fetchChartByKeyRequest} from '@/services/chartApi';
+import Plotly from 'plotly.js-dist-min'
 
 const props = defineProps({
   timeframe: {
     type: String,
     required: true
+  },
+  layout: {
+    type: Object,
+    default: () => ({})
+  },
+  config: {
+    type: Object,
+    default: () => ({})
   }
-});
+})
 
+const chartContainer = ref(null)
 const title = props.timeframe.toUpperCase();
-
 const chartData = ref(null);
 const currentKey = ref('');
 const isLoading = ref(true);
@@ -20,33 +30,6 @@ const authStore = useAuthStore();
 console.log("Token from Pinia:", authStore.token);
 const token = authStore.token;
 
-const fetchChartKeys = async () => {
-  const res = await fetch(`http://localhost:8000/charts/${props.timeframe}/keys`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  if (!res.ok) throw new Error(`Failed to fetch keys (${res.status})`);
-
-  const data = await res.json();
-  if (!data.keys || !data.keys.length) throw new Error("No chart keys found");
-
-  return data.keys;
-};
-
-const fetchChartByKey = async (key) => {
-  const res = await fetch(`http://localhost:8000/charts/key/${key}`, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  });
-
-  if (!res.ok) throw new Error(`Failed to fetch chart for key ${key} (${res.status})`);
-
-  const data = await res.json();
-  return data.chart_data;
-};
 
 onMounted(async () => {
   if (!token) {
@@ -56,27 +39,44 @@ onMounted(async () => {
   }
 
   try {
-    const keys = await fetchChartKeys();
+    const keys = await fetchChartKeysRequest(props.timeframe, token);
     currentKey.value = keys[keys.length - 1]; // Use the latest (last) key
-    chartData.value = await fetchChartByKey(currentKey.value);
+    const data = await fetchChartByKeyRequest(currentKey.value, token);
+    chartData.value = data
+    console.log(chartData.value)
+    
+
   } catch (err) {
     error.value = err.message;
   } finally {
     isLoading.value = false;
   }
 });
+
+watchEffect(() => {
+  const data = chartData.value;
+  const container = chartContainer.value;
+
+  if (data && container) {
+    Plotly.newPlot(
+      container,
+      data.data,
+      { ...data.layout, ...props.layout }, // merge server + custom
+      props.config
+    );
+  }
+});
 </script>
 
 <template>
   <div class="chart-viewer">
-    <h2>{{ title }} Chart</h2>
+    <h2>{{ props.timeframe.toUpperCase() }} Chart</h2>
 
-    <div v-if="isLoading">Loading chart...</div>
+    <div v-if="isLoading">Loading...</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else>
       <p>Viewing: <strong>{{ currentKey }}</strong></p>
-      <pre>{{ chartData }}</pre>
-      <!-- You can replace this with a real chart later -->
+      <div ref="chartContainer" class="chart-container"></div>
     </div>
   </div>
 </template>
@@ -89,5 +89,9 @@ onMounted(async () => {
 
 .error {
   color: #f87171;
+}
+.chart-container {
+  width: 100%;
+  height: 500px;
 }
 </style>
